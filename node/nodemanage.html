@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+            #formcontainer{
+                width: 60%;
+                left: 25%;
+            }
+        </style>
+    <script>
+        //页面加载事件，node - get all
+        function myFunction() {
+            jQuery.support.cors = true;
+            $.ajax({
+                url: "http://172.21.81.235:8000/vl/datacenter/id/cluster/id/node/list",
+                //data:{method:"ajaxValidateEmail", email:value},//给服务器的参数
+                type: "GET",
+                dataType: "json",
+                async: false,
+                cache: false,
+                success: function (result) {
+                    var s = eval(result);
+                    var items = s.items;
+                    var metadatas = [];
+                    $("td").remove();
+                    for (j = 0, len = items.length; j < len; j++) {
+                        var meta = items[j].metadata
+                        metadatas.push(meta);
+                    }
+                    var nodeinfo = [];//uid,name,time
+                    for (i = 0, len = metadatas.length; i < len; i++) {
+                        var uid = metadatas[i].uid;
+                        var name = metadatas[i].name;
+                        var time = metadatas[i].creationTimestamp;
+                        var node = [];
+                        node.push(uid);
+                        node.push(name);
+                        node.push(time);
+                        nodeinfo.push(node);
+                    }
+
+                    for (i = 0, len = nodeinfo.length; i < len; i++) {
+
+                        $("table tbody").append("<tr class = 'success'>" +
+                            "<td><div id='nodeinfo-uid'> " + nodeinfo[i][0] + "</div></td>" +
+                            "<td><div id='nodeinfo-name'> " + nodeinfo[i][1] + "</div></td>" +
+                            "<td><div id='nodeinfo-time'> " + nodeinfo[i][2] + "</div></td>" +
+                            "<td><div id='nodeinfo-time'> " + 'running' + "</div></td></tr>");
+                        // $("#hiddeninfos").append(
+                        //     "<input type='hidden' id="+nodeinfo[i][1]+" value="+nodeinfo[i][1]+">"
+                        // );
+
+                    }
+
+                    // console.log(nodeinfo);
+
+                }
+
+            });
+        }
+
+        function deletenode() {
+            alert("确定要删除该节点吗？")
+            var id = event.target.id;
+
+            var node = document.getElementById(id);
+            node.style.display = "none";
+        }
+
+    </script>
+
+</head>
+
+<body onload="myFunction()">
+
+    <div class="col-md-12 column">
+            <div id="formcontainer">  
+                <p style="text-align: center"><h2 style="margin-left: 10%">节点信息</h2></p>        
+            </div>           </br></br>
+        <!--按钮-->
+
+        <button type="button" class="btn btn-success"><p style='text-align: center'><a href="./getonenodeinfo.html" target="_blank">查看节点信息</a></p></button>
+        <button type="button" class="btn btn-info"><p style='text-align: center'><a href="./addnode.html" target="_blank">创建节点信息</a></p></button>
+        <button type="button" class="btn btn-warning"><p style='text-align: center'><a href="./putnode.html" target="_blank">修改节点信息</a></p></button>                                          
+        <button type="button" class="btn btn-danger"><p style='text-align: center'><a href="./deletenode.html" target="_blank">删除节点信息</a></p></button>                                     
+            </br></br>
+        <!--表格-->
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>
+                        node uid
+                    </th>
+                    <th>
+                        node name
+                    </th>
+                    <th>
+                        creation time
+                    </th>
+                    <th>
+                        status
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+
+
+            </tbody>
+        </table>
+        <!-- <div id=hiddeninfos>
+
+        </div> -->
+    </div>
+    
+</body>
+
+</html>

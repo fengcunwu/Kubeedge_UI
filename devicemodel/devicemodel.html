@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+    <title>advantech-intelligent-edge</title>
+
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        #index-iframe-top {
+            width: 100%;
+            height: 50px;
+            position: absolute;
+            right: 2px;
+        }
+
+        #index-iframe-left {
+            width: 100%;
+            height: 100%;
+            left: 1px;
+        }
+
+        #index-iframe-body {
+            width: 100%;
+            height: 100%;
+            right: 1px;
+        }
+
+        #index-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        #index-container-row {
+            width: 100%;
+            height: 100%;
+            margin-top: 50px;
+        }
+
+        #index-container-row-2 {
+            width: 15%;
+            height: 100%;
+        }
+
+        #index-container-row-10 {
+            width: 85%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container" id="index-container">
+        <iframe id="index-iframe-top" src="../top.html"></iframe>
+        <div class="row clearfix" id="index-container-row">
+            <div class="col-md-2 column" id="index-container-row-2">
+                <iframe id="index-iframe-left" src="../left.html"></iframe>
+            </div>
+            <div class="col-md-10 column" id="index-container-row-10">
+                <iframe id="index-iframe-body" src="./devicemodelmanage.html"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

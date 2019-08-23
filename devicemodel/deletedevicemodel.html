@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+    <title>advantech-intelligent-edge</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="keywords" content="javascript,vueJS,Jquery,AngularJS,HTML5,CSS3">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        #formcontainer {
+            width: 60%;
+            left: 15%;
+        }
+    </style>
+    <script type="text/javascript">
+        function deletedevicemodel() {
+            var devicemodelname = $("#devicemodel-name").val();
+            axios({
+                method: 'delete',
+                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/devicemodel/delete',
+                data: {
+                    "metadata": {
+                        "name": devicemodelname,
+                        "namespace": "default"
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container" id="formcontainer">
+
+        <div class="row clearfix">
+            <p style="text-align: center">
+                <h2 style="margin-left: 10%">删除设备模型</h2>
+            </p>
+
+            <div class="col-md-12 column" style="margin-top: 5%">
+                <form role="form">
+                    <div class="form-group">
+                        <label>devicemodel-name</label><input type="text" class="form-control" id="devicemodel-name"
+                            value="" required />
+                    </div>
+                    <input style="width: 80px" type="button" class="btn btn-success" onclick="deletedevicemodel()"
+                        value="Submit"></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
