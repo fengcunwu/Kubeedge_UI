@@ -16,19 +16,22 @@
         }
     </style>
     <script type="text/javascript">
-        function deletedevice() {
-            var devicename = $("#device-name").val();
-            var namespace = $("#device-namespace").val();
+        function deletedeployment() {
+            var deploymentname = $("#deployment-name").val();
+            var namespace = $("#deployment-namespace").val();
             axios({
                 method: 'delete',
-                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/deviceinstance/delete',
+                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/deployment/delete',
                 data: {
                     "metadata": {
-                        "name": devicename,
+                        "name": deploymentname,
                         "namespace": namespace
                     }
                 }
-            });
+            }).then(
+                alert("应用删除成功"),
+                // window.location.href='./deployment.html');
+                window.open('./deployment.html'))
         }
     </script>
 </head>
@@ -38,18 +41,18 @@
 
         <div class="row clearfix">
             <p style="text-align: center">
-                <h2 style="margin-left: 10%">删除设备</h2>
+                <h2 style="margin-left: 10%">删除应用</h2>
             </p>
 
             <div class="col-md-12 column" style="margin-top: 5%">
                 <form role="form">
                     <div class="form-group">
-                        <label>device-name</label><input type="text" class="form-control" id="device-name" value=""
+                        <label>deployment-name</label><input type="text" class="form-control" id="deployment-name" value=""
                             required /></br>
-                            <label>device-namespace</label><input type="text" class="form-control" id="device-namespace" value=""
+                            <label>deployment-namespace</label><input type="text" class="form-control" id="deployment-namespace" value=""
                             required /></br> 
                     </div>
-                    <input style="width: 80px" type="button" class="btn btn-success" onclick="deletedevice()"
+                    <input style="width: 80px" type="button" class="btn btn-success" onclick="deletedeployment()"
                         value="Submit"></button>
                 </form>
             </div>

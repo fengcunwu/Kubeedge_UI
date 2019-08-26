@@ -24,7 +24,10 @@
                 data: {
                     "metadata":{"name":nodename}
                 }
-            });
+            }).then(
+                alert("节点创建成功"),
+                // window.location.href='./node.html');
+                window.open('./node.html'))
         }
     </script>
 </head>

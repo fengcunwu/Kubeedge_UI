@@ -29,7 +29,10 @@
                         "Labels": {labelname: labelvalue}
                     }
                 }
-            });
+            }).then(
+                alert("节点修改成功"),
+                // window.location.href='./node.html');
+                window.open('./node.html'))
         }
     </script>
 </head>

@@ -16,24 +16,27 @@
         }
     </style>
     <script type="text/javascript">
-        function putdevice() {
-            var devicename = $("#device-name").val();
-            var namespace = $("#device-namespace").val();
+        function putdeployment() {
+            var deploymentname = $("#deployment-name").val();
+            var namespace = $("#deployment-namespace").val();
             //  var labelname = $("#label-name").val();
             var labelvalue = $("#label-value").val();
             axios({
                 method: 'put',
-                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/deviceinstance/update',
+                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/deployment/update',
                 data: {
                     "metadata": {
-                        "name": devicename,
+                        "name": deploymentname,
                         "namespace": namespace,
                         "Labels": {
-                            "lablename": labelvalue 
-                        }
+                            "labelname": labelvalue
+                         }
                     }
                 }
-            });
+            }).then(
+                alert("应用修改成功"),
+                // window.location.href='./deployment.html');
+                window.open('./deployment.html'))
         }
     </script>
 </head>
@@ -43,7 +46,7 @@
 
         <div class="row clearfix">
             <p style="text-align: center">
-                <h2 style="margin-left: 10%">修改设备信息</h2>
+                <h2 style="margin-left: 10%">修改应用信息</h2>
             </p>
 
             <div class="col-md-12 column" style="margin-top: 5%">
@@ -52,20 +55,20 @@
                         <label >节点编号</label><input type="number" class="form-control" />
                     </div> -->
                     <div class="form-group">
-                        <label>device-name</label><input type="text" class="form-control" id="device-name" value=""
-                            required />
+                        <label>deployment-name</label><input type="text" class="form-control" id="deployment-name"
+                            value="" required />
                     </div></br>
                     <div class="form-group">
-                        <label>device-namespace</label><input type="text" class="form-control" id="device-namespace" value=""
-                            required />
+                        <label>deployment-namespace</label><input type="text" class="form-control"
+                            id="deployment-namespace" value="" required />
                     </div></br>
                     <div class="form-group">
-                        <label>device-label</label></br>
+                        <label>deployment-label</label></br>
                         <!-- <label>label-name</label><input type="text" class="form-control" id="label-name" value="" required /></br> -->
                         <input type="text" class="form-control" id="label-value" value="" required />
                     </div>
 
-                    <input style="width: 80px" type="button" class="btn btn-success" onclick="putdevice()"
+                    <input style="width: 80px" type="button" class="btn btn-success" onclick="putdeployment()"
                         value="Submit"></button>
                 </form>
             </div>
