@@ -19,20 +19,61 @@
         function adddeployment() {
             var name = $("#deployment-name").val();
             var namespace = $("#deployment-namespace").val();
-           
-            //var propertiesname = $("#device-propertiesname").val();
-            //var propertiesvaluemax = $("#device-propertiesvaluemax").val();
+            var description = $("#deployment-description").val();
+            var annotation = $("#deployment-annotation").val();
+            var replicasstr = $("#deployment-replicas").val();
+            var replicas = parseInt(replicasstr);
+            var image = $("#deployment-image").val();
+            var hostPortstr = $("#deployment-hostPort").val();
+            var hostPort = parseInt(hostPortstr);
+            var containerPortstr = $("#deployment-containerPort").val();
+            var containerPort = parseInt(containerPortstr);
+            // console.log(name+""+namespace+""+description+""+annotation+""+replicas+""+image+""+hostPort+""+containerPort);
             axios({
                 method: 'post',
-                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/deployment/create',
+                url: 'http://172.21.81.235:8000/v1/cluster/id/deployment',
                 data: {
                     "metadata": {
                         "name": name,
-                        "namespace": namespace
+                        "namespace": namespace,
+                        "labels": {
+                            "description": description
+                        },
+                        "annotations": {
+                            "deployment.kubernetes.io/revision": annotation
+                        }
+                    },
+                    "spec": {
+                        "replicas": replicas,
+                        "selector": {
+                            "matchLabels": {
+                                "app": "nginx"
+                            }
+                        },
+                        "template": {
+                            "metadata": {
+                                "labels": {
+                                    "app": "nginx"
+                                }
+                            },
+                            "spec": {
+                                "containers": [
+                                    {
+                                        "name": "nginx",
+                                        "image": image,
+                                        "ports": [
+                                            {
+                                                "hostPort": hostPort,
+                                                "containerPort": containerPort,
+                                                "protocol": "TCP"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
                     }
                 }
-            
-
             }).then(
                 alert("应用创建成功"),
                 // window.location.href='./deployment.html');
@@ -53,9 +94,23 @@
                 <form role="form">
                     <div class="form-group">
                         <label>deployment-name</label><input type="text" class="form-control" id="deployment-name"
-                            value="" required /><br />
+                            value="nginx" required /><br />
                         <label>deployment-namespace</label><input type="text" class="form-control"
-                            id="deployment-namespace" value="" required /><br />
+                            id="deployment-namespace" value="default" required /><br />
+                            <label>deployment-description</label><input type="text" class="form-control"
+                            id="deployment-description" value="nginx"/><br />
+                            <label>deployment.kubernetes.io/revision</label><input type="text" class="form-control"
+                            id="deployment-annotation" value="1" required /><br />
+                            <label>deployment-replicas</label><input type="number" class="form-control"
+                            id="deployment-replicas" value="1" required /><br />
+                            <label>deployment-image</label><input type="text" class="form-control"
+                            id="deployment-image" value="nginx:1.15.12" required /><br />
+                            <label>deployment-hostPort</label><input type="number" class="form-control"
+                            id="deployment-hostPort" value="80" required /><br />
+                            <label>deployment-containerPort</label><input type="number" class="form-control"
+                            id="deployment-containerPort" value="80" required /><br />
+
+                            
                     </div>
 
                     <input style="width: 80px" type="button" class="btn btn-success" onclick="adddeployment()"

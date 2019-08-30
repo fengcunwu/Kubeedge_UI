@@ -6,7 +6,7 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
     <meta name="keywords" content="javascript,vueJS,Jquery,AngularJS,HTML5,CSS3">
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <style>
@@ -15,10 +15,11 @@
             left: 15%;
         }
     </style>
-    <script type="text/javascript">
+    <script>
         function myload() {
             var url = location.search; //获取url中"?"符后的字串 
-            var theRequest = new Object();
+          
+            var theRequest = new Object(); 
             if (url.indexOf("?") != -1) {
                 var str = url.substr(1); //substr()方法返回从参数值开始到结束的字符串；  
                 var strs = str.split("&");
@@ -29,26 +30,18 @@
                 $("#node-name").val(theRequest.nodename);
             }
         }
-        function putnode() {
-            var nodename = $("#node-name").val();
-            //  var labelname = $("#label-name").val();
-            var labelvalue = $("#label-value").val();
-            axios({
-                method: 'put',
-                url: 'http://172.21.81.235:8000/v1/datacenter/id/cluster/id/node',
-                data: {
-                    "metadata": {
-                        "name": nodename,
-                        "Labels": {
-                            "labelname": labelvalue
-                        }
-                    }
-                }
-            }).then(
-                alert("节点修改成功"),
-                // window.location.href='./node.html');
-                window.open('./node.html'))
-        }
+            function getnodeinfo() {
+                var nodename = $("#node-name").val();
+                axios({
+                    method: 'get',
+                    url: 'http://172.21.81.235:8000/v1/cluster/id/namespace/default/deployment/' + nodename,
+                }).then(function (response) {
+                    console.log(response);
+                    var jj = JSON.stringify(response);
+                    $("#node-info").val(jj);
+                });
+
+            }
     </script>
 </head>
 
@@ -57,26 +50,23 @@
 
         <div class="row clearfix">
             <p style="text-align: center">
-                <h2 style="margin-left: 10%">修改边缘节点信息</h2>
+                <h2 style="margin-left: 10%">应用信息查询</h2>
             </p>
-
             <div class="col-md-12 column" style="margin-top: 5%">
                 <form role="form">
-                    <!-- <div class="form-group">
-                        <label >节点编号</label><input type="number" class="form-control" />
-                    </div> -->
                     <div class="form-group">
-                        <label>节点名称</label><input type="text" class="form-control" id="node-name" value="" required />
-                    </div></br>
-                    <div class="form-group">
-                        <label>节点label</label></br>
-                        <!-- <label>label-name</label><input type="text" class="form-control" id="label-name" value="" required /></br> -->
-                        <input type="text" class="form-control" id="label-value" value="" required />
+                        <label>应用名称</label><input type="text" class="form-control" id="node-name" value="" required />
                     </div>
-
-                    <input style="width: 80px" type="button" class="btn btn-success" onclick="putnode()"
+                    <input style="width: 80px" type="button" class="btn btn-success" onclick="getnodeinfo()"
                         value="Submit"></button>
                 </form>
+            </div>
+            <div>
+                <h2>
+                    application info
+                </h2>
+                <textarea id="node-info" cols="120" rows="20" value=""></textarea>
+
             </div>
         </div>
     </div>

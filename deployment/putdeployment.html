@@ -16,21 +16,37 @@
         }
     </style>
     <script type="text/javascript">
+     function myload() {
+            var url = location.search; //获取url中"?"符后的字串 
+            console.log("url"+url);
+            var theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1); //substr()方法返回从参数值开始到结束的字符串；  
+                var strs = str.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split("=")[0]] = (strs[i].split("=")[1]);
+                }
+                console.log(theRequest); //此时的theRequest就是我们需要的参数；
+                $("#deployment-name").val(theRequest.deploymentname);
+                $("#deployment-namespace").val(theRequest.deploymentnamespace);
+            }
+        }
         function putdeployment() {
             var deploymentname = $("#deployment-name").val();
             var namespace = $("#deployment-namespace").val();
             //  var labelname = $("#label-name").val();
             var labelvalue = $("#label-value").val();
+        
             axios({
                 method: 'put',
-                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/deployment/update',
+                url: 'http://172.21.81.235:8000/v1/cluster/id/deployment',
                 data: {
                     "metadata": {
-                        "name": deploymentname,
-                        "namespace": namespace,
+                        "name": "nginx",
+                        "namespace": "default",
                         "Labels": {
                             "labelname": labelvalue
-                         }
+                        }
                     }
                 }
             }).then(
@@ -41,7 +57,7 @@
     </script>
 </head>
 
-<body>
+<body onload="myload()">
     <div class="container" id="formcontainer">
 
         <div class="row clearfix">

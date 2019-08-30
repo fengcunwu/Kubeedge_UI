@@ -16,22 +16,34 @@
         }
     </style>
     <script type="text/javascript">
+        function myload() {
+            var url = location.search; //获取url中"?"符后的字串 
+
+            var theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1); //substr()方法返回从参数值开始到结束的字符串；  
+                var strs = str.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split("=")[0]] = (strs[i].split("=")[1]);
+                }
+                console.log(theRequest); //此时的theRequest就是我们需要的参数；
+                $("#node-name").val(theRequest.nodename);
+            }
+        }
         function deletenode() {
             var nodename = $("#node-name").val();
             axios({
                 method: 'delete',
-                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/node/delete',
-                data: {
-                    "metadata":{"name":nodename}
-                }
+                url: 'http://172.21.81.235:8000/v1/datacenter/id/cluster/id/node/' + nodename,
+
             }).then(
                 alert("节点删除成功"),
-                window.location.href='./node.html');
+                window.open('./node.html'))
         }
     </script>
 </head>
 
-<body>
+<body onload="myload()">
     <div class="container" id="formcontainer">
 
         <div class="row clearfix">
@@ -43,7 +55,7 @@
                 <form role="form">
                     <div class="form-group">
                         <label>节点名称</label><input type="text" class="form-control" id="node-name" value="" required />
-                    </div>                   
+                    </div>
                     <input style="width: 80px" type="button" class="btn btn-success" onclick="deletenode()"
                         value="Submit"></button>
                 </form>

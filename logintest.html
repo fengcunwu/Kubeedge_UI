@@ -15,82 +15,100 @@
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	-->
     <link rel="stylesheet" type="text/css" href="./css/login.css">
-    <script type="text/javascript" src="./js/jquery-1.5.1.js"></script>
+    <script type="text/javascript" src="https://cdn.staticfile.org/jquery/3.4.1/jquery.js"></script>
     <script type="text/javascript" src="./js/login.js"></script>
     <script src="./js/common.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
-    function logincheck(){
-        var name = $("#loginname").val();
-        var pass = $("#loginpass").val();
-        console.log(name+"#######"+pass);
-        if(name=="admin" && pass=="admin"){return true}
-        else{
-            alert("请输入正确用户和密码");
-            return false}
-    }
-    
+        function logincheck() {
+            var name = $("#loginname").val();
+            var pass = $("#loginpass").val();
+            console.log(name + "#######" + pass);
+            if (name == "admin" && pass == "admin") { return true }
+            else {
+                alert("请输入正确用户和密码");
+                return false
+            }
+        }
+
     </script>
+    <style>
+        #back {
+            align-self: center;
+            background-image: url(./img/e1edda1c2dbe5c24f6ac888280356d5a.jpg);
+            background-size: 100%;
+
+        }
+
+        .login2 {
+            text-align: center;
+        }
+    </style>
 
 </head>
 
-<body>
-    <div class="main">
-        <div>
-            <h1 style="font-family:楷体;font-weight:bold;font-size:300%">ADVANTECH INTELLIGENT EDGE PLATFORM</h1>
-        </div>
-        <div>
-            <div class="imageDiv"><img height=370px class="img" src="./img/node.jpg" /></div>
-            <div class="login1">
-                <div class="login2">
-                    <div class="loginTopDiv">
-                        <span class="loginTop">登录</span>
-                        <span>
+<body id="back">
 
-                        </span>
-                    </div>
-                    <div>
-                        <form target="_top" action="./index.html" method="post" id="loginForm" onsubmit=" return logincheck()">
-                            <input type="hidden" name="method" value="login" />
-                            <table>
-                                <tr>
-                                    <td width="50"></td>
-                                    <td><label class="error" id="msg"></label></td>
-                                </tr>
-                                <tr>
-                                    <td width="50">用户名</td>
-                                    <td><input class="input" type="text" name="loginname" id="loginname" /></td>
-                                </tr>
-                                <tr>
-                                    <td height="20">&nbsp;</td>
-                                    <td><label id="loginnameError" class="error"></label></td>
-                                </tr>
-                                <tr>
-                                    <td>密　码</td>
-                                    <td><input class="input" type="password" name="loginpass" id="loginpass" value="" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td height="20">&nbsp;</td>
-                                    <td><label id="loginpassError" class="error"></label></td>
-                                </tr>
+    <div>
 
-                                <tr>
-                                    <td height="20px">&nbsp;</td>
-                                    <td><label id="verifyCodeError" class="error"></label></td>
-                                </tr>
-                                <tr>
-                                    <td>&nbsp;</td>
-                                    <td style="box-align: left">
-                                        <input type="image" id="submit" src="./img/login1.jpg" class="loginBtn" />
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                    </div>
+        <div class="main">
+            <div>
+                <h1 style="font-family:楷体;font-weight:bold;font-size:250%; color:seashell"><span
+                        style="text-align: right; position:static;"> 研华智能边缘物联网平台</span></h1>
+            </div>
+            <!-- <div>
+               
+                <div class="login1">-->
+            <div class="login2">
+                <div class="loginTopDiv">
+                    <img src="./img/advantech.jpg" class="img-circle" />
+                    <!-- <span class="loginTop">登录</span> -->
+                </div>
+                <div id="logintableDiv">
+                    <form target="_top" action="./index.html" method="post" id="loginForm"
+                        onsubmit=" return logincheck()">
+                        <input type="hidden" name="method" value="login" />
+                        <table>
+                            <tr>
+                                <td width="50"></td>
+                                <td><label class="error" id="msg"></label></td>
+                            </tr>
+                            <tr>
+                                <td width="50">用户名</td>
+                                <td><input class="input" type="text" name="loginname" id="loginname" /></td>
+                            </tr>
+                            <tr>
+                                <td height="20">&nbsp;</td>
+                                <td><label id="loginnameError" class="error"></label></td>
+                            </tr>
+                            <tr>
+                                <td>密　码</td>
+                                <td><input class="input" type="password" name="loginpass" id="loginpass" value="" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="20">&nbsp;</td>
+                                <td><label id="loginpassError" class="error"></label></td>
+                            </tr>
+
+                            <tr>
+                                <td height="20px">&nbsp;</td>
+                                <td><label id="verifyCodeError" class="error"></label></td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td style="box-align: left">
+                                    <input type="image" id="submit" src="./img/login1.jpg" class="loginBtn" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+    <!--  </div>
+    </div> -->
 </body>
 
 </html>

@@ -16,18 +16,26 @@
         }
     </style>
     <script type="text/javascript">
+        function myload() {
+            var url = location.search; //获取url中"?"符后的字串 
+
+            var theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1); //substr()方法返回从参数值开始到结束的字符串；  
+                var strs = str.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split("=")[0]] = (strs[i].split("=")[1]);
+                }
+                console.log(theRequest); //此时的theRequest就是我们需要的参数；
+                $("#deployment-name").val(theRequest.nodename);
+            }
+        }
         function deletedeployment() {
             var deploymentname = $("#deployment-name").val();
             var namespace = $("#deployment-namespace").val();
             axios({
                 method: 'delete',
-                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/deployment/delete',
-                data: {
-                    "metadata": {
-                        "name": deploymentname,
-                        "namespace": namespace
-                    }
-                }
+                url: 'http://172.21.81.235:8000/v1/cluster/id/namespace/default/deployment/'+deploymentname,
             }).then(
                 alert("应用删除成功"),
                 // window.location.href='./deployment.html');
@@ -36,7 +44,7 @@
     </script>
 </head>
 
-<body>
+<body onload="myload()">
     <div class="container" id="formcontainer">
 
         <div class="row clearfix">
@@ -49,8 +57,8 @@
                     <div class="form-group">
                         <label>deployment-name</label><input type="text" class="form-control" id="deployment-name" value=""
                             required /></br>
-                            <label>deployment-namespace</label><input type="text" class="form-control" id="deployment-namespace" value=""
-                            required /></br> 
+                            <!-- <label>deployment-namespace</label><input type="text" class="form-control" id="deployment-namespace" value=""
+                            required /></br>  -->
                     </div>
                     <input style="width: 80px" type="button" class="btn btn-success" onclick="deletedeployment()"
                         value="Submit"></button>

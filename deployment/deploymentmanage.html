@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <style>
             #formcontainer{
                 width: 60%;
@@ -17,8 +18,8 @@
         function myFunction() {
             jQuery.support.cors = true;
             $.ajax({
-                url: "http://172.21.81.235:8000/vl/datacenter/id/cluster/id/deployment/list",
-                //data:{method:"ajaxValidateEmail", email:value},//给服务器的参数
+                url: "http://172.21.81.235:8000/v1/cluster/id/deployments",
+                
                 type: "GET",
                 dataType: "json",
                 async: false,
@@ -76,11 +77,17 @@
                     for (i = 0, len = nodeinfo.length; i < len; i++) {
 
                         $("table tbody").append("<tr class = 'success'>" +
-                            "<td><div id='nodeinfo-uid'> " + nodeinfo[i][0] + "</div></td>" +
-                            "<td><div id='nodeinfo-name'> " + nodeinfo[i][1] + "</div></td>" +
-                            "<td><div id='nodeinfo-time'> " + nodeinfo[i][2] + "</div></td>" +
-                            "<td><div id='nodeinfo-namespace'> " + nodeinfo[i][3] + "</div></td>" +
-                            "<td><div id='nodeinfo-status'> " + 'running' + "</div></td></tr>");
+                            "<td><div id='nodeinfo-uid'>" + nodeinfo[i][0] + "</div></td>" +
+                            "<td><div id='name" + i + "'>" + nodeinfo[i][1] + "</div></td>" +
+                            "<td><div id='nodeinfo-time'>" + nodeinfo[i][2] + "</div></td>" +
+                            "<td><div id='namespace"+i+"'>" + nodeinfo[i][3] + "</div></td>" +
+                            "<td><div id='nodeinfo-status'>" + 'running' + "</div></td>"+
+                            "<td><div id='nodeinfo-operation'> " +
+                            '<button class="btn btn-small btn-success" type="button" onclick="getone(this)" value="name' + i + '">查看</button>' +
+                            '<button class="btn btn-small btn-info" type="button" onclick="putone(this)" value="name' + i + '"  name="namespace'+i+'">修改</button>' +
+                            '<button class="btn btn-small btn-danger" type="button" onclick="deleteone(this)" value="name' + i + '" name="namespace'+i+'">删除</button>' +
+                            "</div></td>" +
+                            "</tr>");
                         // $("#hiddeninfos").append(
                         //     "<input type='hidden' id="+nodeinfo[i][1]+" value="+nodeinfo[i][1]+">"
                         // );
@@ -94,13 +101,36 @@
             });
         }
 
-        function deletenode() {
-            alert("确定要删除该deploymentmodel吗？")
-            var id = event.target.id;
-
-            var node = document.getElementById(id);
-            node.style.display = "none";
+        function getone(btn) {
+            var btnval = btn.getAttribute("value");
+            var getname = $("#" + btnval).html();//获得name
+            window.open("./getonedeploymentinfo.html?nodename="+getname);
         }
+        function putone(btn) {
+            var btnval = btn.getAttribute("value");
+            var btnname = btn.getAttribute("name");
+          
+            var getname = $("#" + btnval).html();//获得name 
+            var getnamespace = $("#" + btnname).html();
+          
+            window.open("./putdeployment.html?deploymentname="+getname+"&deploymentnamespace="+getnamespace);
+        }
+        function deleteone(btn) {
+            alert("确定要删除它？");
+            var btnval = btn.getAttribute("value");
+            var btnname = btn.getAttribute("name");
+            
+            var getname = $("#" + btnval).html();//获得name
+            var getnamespace = $("#" + btnname).html();
+            axios({
+                method: 'delete',
+                url: 'http://172.21.81.235:8000/v1/cluster/id/namespace/'+getnamespace+'/deployment/'+getname,
+            }).then(
+                alert("应用删除成功"),
+                // window.location.href='./deployment.html');
+                window.open('./deployment.html'))
+        }
+            // window.open("./deletedeployment.html?nodename="+getname);
 
     </script>
 
@@ -109,16 +139,14 @@
 <body onload="myFunction()">
 
     <div class="col-md-12 column">
-            <div id="formcontainer">  
-                <p style="text-align: center"><h2 style="margin-left: 10%"> deploymentmodel信息</h2></p>        
-            </div>           </br></br>
+            <div id="formcontainer">
+                    <p style="text-align: left">
+                        <h1 style="margin-left: 70%">应用信息</h1>
+                    </p>
+                </div> </br></br>
         <!--按钮-->
-
-        <button type="button" class="btn btn-success"><p style='text-align: center'><a href="#" target="_blank">查看应用信息</a></p></button>
-        <button type="button" class="btn btn-info"><p style='text-align: center'><a href="./adddeployment.html" target="_blank">创建应用信息</a></p></button>
-        <button type="button" class="btn btn-warning"><p style='text-align: center'><a href="./putdeployment.html" target="_blank">修改应用信息</a></p></button>                                          
-        <button type="button" class="btn btn-danger"><p style='text-align: center'><a href="./deletedeployment.html" target="_blank">删除应用信息</a></p></button>                                     
-            </br></br>
+        <button type="button" class="btn btn-info"><p style='text-align: center'><a href="./adddeployment.html" target="_blank">创建应用信息</a></p></button>                                 
+        </br></br>
         <!--表格-->
         <table class="table table-hover table-bordered">
             <thead>
@@ -138,7 +166,9 @@
                     <th>
                         status
                     </th>
-
+                    <th>
+                            operation
+                        </th>
                 </tr>
             </thead>
             <tbody>
