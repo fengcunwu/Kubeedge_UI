@@ -19,26 +19,74 @@
         function adddevice() {
             var name = $("#device-name").val();
             var namespace = $("#device-namespace").val();
-            var devicemodel = $("#device-devicemodel").val();
-            //var propertiesname = $("#device-propertiesname").val();
-            //var propertiesvaluemax = $("#device-propertiesvaluemax").val();
+
+            var devicemodelRef = $("#devicemodelRef").val();
+            var devicenodeSelector = $("#devicenodeSelector").val();
+            // console.log(name+""+namespace+""+description+""+annotation+""+replicas+""+image+""+hostPort+""+containerPort);
             axios({
                 method: 'post',
-                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/deviceinstance/create',
+                url: 'http://172.21.81.235:8000/v1/cluster/id/device',
                 data: {
+
                     "metadata": {
                         "name": name,
-                        "namespace": namespace
+                        "namespace": namespace,
+                        "generation": 1,
+                        "creationTimestamp": "2019-08-28T01:04:42Z"
                     },
                     "spec": {
                         "deviceModelRef": {
-                            "name": devicemodel
+                            "name": devicemodelRef
+                        },
+                        "protocol": {
+                            "modbus": {
+                                "tcp": {
+                                    "ip": "172.21.81.235",
+                                    "port": 5028,
+                                    "slaveID": "1"
+                                }
+                            }
+                        },
+                        "nodeSelector": {
+                            "nodeSelectorTerms": [
+                                {
+                                    "matchExpressions": [
+                                        {
+                                            "key": "",
+                                            "operator": "In",
+                                            "values": [
+                                                devicenodeSelector
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
                         }
+                    },
+                    "status": {
+                        "twins": [
+                            {
+                                "propertyName": "temperature",
+                                "desired": {
+                                    "value": "66",
+                                    "metadata": {
+                                        "timestamp": "1550049403598",
+                                        "type": "int"
+                                    }
+                                },
+                                "reported": {
+                                    "value": "16",
+                                    "metadata": {
+                                        "timestamp": "1566954444405",
+                                        "type": "int"
+                                    }
+                                }
+                            }
+                        ]
                     }
                 }
-
             }).then(
-                alert("设备创建成功"),
+                alert("应用创建成功"),
                 // window.location.href='./device.html');
                 window.open('./device.html'))
         }
@@ -50,20 +98,22 @@
 
         <div class="row clearfix">
             <p style="text-align: center">
-                <h2 style="margin-left: 10%">添加设备</h2>
+                <h2 style="margin-left: 10%">添加设备模型</h2>
             </p>
 
             <div class="col-md-12 column" style="margin-top: 5%">
                 <form role="form">
                     <div class="form-group">
-                        <label>device-name</label><input type="text" class="form-control" id="device-name" value=""
-                            required /><br />
+                        <label>device-name</label><input type="text" class="form-control" id="device-name"
+                            value="device" required /><br />
                         <label>device-namespace</label><input type="text" class="form-control" id="device-namespace"
-                            value="" required /><br />
-                            <label>device-devicemodel</label><input type="text" class="form-control" id="device-devicemodel"
-                            value="" required /><br />
-                        <!-- <label>device-propertiesname</label><input type="text" class="form-control" id="device-propertiesname" value="" required /><br/>
-                        <label>device-propertiesvaluemax</label><input type="text" class="form-control" id="device-propertiesvaluemax" value="" required /><br/> -->
+                            value="default" required /><br />
+
+                        <label>devicemodelRef</label><input type="text" class="form-control" id="devicemodelRef" 
+                        value="device-model-test" required /><br />
+                            <label>devicenodeSelector</label><input type="text" class="form-control" id="devicenodeSelector" 
+                            value="fb4ebb70-2783-42b8-b3ef-63e2fd6d242e" required /><br />
+
                     </div>
 
                     <input style="width: 80px" type="button" class="btn btn-success" onclick="adddevice()"

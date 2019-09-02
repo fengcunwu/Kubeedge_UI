@@ -18,15 +18,11 @@
     <script type="text/javascript">
         function deletedevicemodel() {
             var devicemodelname = $("#devicemodel-name").val();
+            var devicemodelnamespace = $("#devicemodel-namespace").val();
             axios({
                 method: 'delete',
-                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/devicemodel/delete',
-                data: {
-                    "metadata": {
-                        "name": devicemodelname,
-                        "namespace": "default"
-                    }
-                }
+                url: 'http://172.21.81.235:8000/v1/cluster/id/namespace/'+namespace+'/devicemodel/'+name,
+               
             }).then(
                 alert("设备模型删除成功"),
                 // window.location.href='./devicemodel.html');
@@ -47,6 +43,8 @@
                 <form role="form">
                     <div class="form-group">
                         <label>devicemodel-name</label><input type="text" class="form-control" id="devicemodel-name"
+                            value="" required />
+                            <label>devicemodel-namespace</label><input type="text" class="form-control" id="devicemodel-namespace"
                             value="" required />
                     </div>
                     <input style="width: 80px" type="button" class="btn btn-success" onclick="deletedevicemodel()"

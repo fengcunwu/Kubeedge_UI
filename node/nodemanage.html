@@ -14,157 +14,99 @@
         }
     </style>
     <script>
-       
+
 
         //页面加载事件，node - get all
         function myFunction() {
-            jQuery.support.cors = true;
-        
-            $.ajax({
-                url: "http://172.21.81.235:8000/v1/datacenter/id/cluster/id/nodes",
-                type: "GET",
-                dataType: "json",
-                async: false,
-                cache: false,
-                success: function (result) {
-                    // var s = eval(result);                   
-                    $("td").remove();
-                    var nodes = [];
-                    var items = result.items;
-                    // console.log(items);
-                    var metadatas = [];//获得metadatas
-                    var status = [];
-                    for (j = 0, len = items.length; j < len; j++) {
-                        var meta = items[j].metadata;
-                        var state = items[j].status;
-                        status.push(state);
-                        metadatas.push(meta);
-                    }
-
-                    var myconditions = [];//报文中的conditions
-                    var infos = [];//报文中的nodeInfo
-                    for (j = 0, len = status.length; j < len; j++) {
-                        var mycondition = status[j].conditions;
-                        myconditions.push(mycondition);
-                        var info = status[j].nodeInfo;
-                        infos.push(info);
-                    }
-
-
-                    //取出id，名字，时间
-                    for (i = 0, len = metadatas.length; i < len; i++) {
-                        var uid = metadatas[i].uid;
-                        var name = metadatas[i].name;
-                        var time = metadatas[i].creationTimestamp;
-                        var node = [];
-                        node.push(uid);
-                        node.push(name);
-                        node.push(time);
-                        nodes.push(node);
-                    }
-
-                    //获得type=ready的status
-                    // var nodestatus = [];
-                    // // console.log(myconditions);
-                    // for (i = 0, len = myconditions.length; i < len; i++) {
-                    //     var conditions = [];
-                    //     conditions.push(myconditions[i]);//讲两个conditions存入数组
-                    //     var condition = [];
-                    //     var condition = conditions[0];
-                        
-                    //     //将condition中属于type=
-                    //     for (j = 0; j < condition.length; j++) {
-
-                    //         var onecondition = condition[j];
-                    //         console.log(onecondition);
-                    //         var condition_type = onecondition.type;
-                    //         if (condition_type == "Ready") {
-                    //             var condition_status = onecondition.status;
-                    //             console.log(condition_status);
-                    //             nodestatus.push(condition_status);
-                    //         }
-                    //     }
-                    // }
-                    var nodeinfos = [];
-                    for (i = 0; i < infos.length; i++) {
-                        // console.log(i);
-                        var status_nodeinfo = infos[i];
-                        // console.log(status_nodeinfo);
-                        var osImage = status_nodeinfo.osImage;
-                        var architecture = status_nodeinfo.architecture;
-                        var containerRuntimeVersion = status_nodeinfo.containerRuntimeVersion;
-                        var machineID = status_nodeinfo.machineID;
-                        var info = [];
-                        info.push(machineID);
-                        info.push(architecture);
-                        info.push(osImage);
-                        info.push(containerRuntimeVersion);
-                        nodeinfos.push(info);
-
-                    }
-                    // console.log(nodeinfos);
-
-                    //动态创建表格
-                    for (i = 0, len = nodes.length; i < len; i++) {
-
-                        $("table tbody").append("<tr class = 'success'>" +
-                            "<td><div id='nodeinfo-uid'> " + nodes[i][0] + "</div></td>" +
-                            "<td><div id='nodename" + i + "'>" +nodes[i][1]+ "</div></td>" +
-                            "<td><div id='nodeinfo-time'> " + nodes[i][2] + "</div></td>" +
-                            "<td><div id='nodeinfo-machineid'> " + nodeinfos[i][0] + "</div></td>" +
-                            "<td><div id='nodeinfo-architecture'> " + nodeinfos[i][1] + "</div></td>" +
-                            "<td><div id='nodeinfo-osimage'> " + nodeinfos[i][2] + "</div></td>" +
-                            "<td><div id='nodeinfo-containerruntimeversion'> " + nodeinfos[i][3] + "</div></td>" +
-                            // "<td><div id='nodeinfo-status'> " + nodestatus[i] + "</div></td>" +
-                            "<td><div id='nodeinfo-operation'> " +
-                            '<button class="btn btn-small btn-success" type="button" onclick="getone(this)" value="nodename' + i + '">查看</button>' +
-                            '<button class="btn btn-small btn-info" type="button" onclick="putone(this)" value="nodename' + i + '">修改</button>' +
-                            '<button class="btn btn-small btn-danger" type="button" onclick="deleteone(this)" value="nodename' + i + '">删除</button>' +
-                            "</div></td>" +
-                            "</tr>");
-
-
-                    }
-
-
+            axios({
+                method: 'get',
+                url: 'http://172.21.81.235:8000/v1/datacenter/id/cluster/id/nodes'
+            }).then(function (response) {
+                items = response.data.items;
+                var metadatas = [];
+                var statuss = [];
+                for (i = 0; i < items.length; i++) {
+                    var metadata = items[i].metadata;
+                    metadatas.push(metadata);
+                    var status_all = items[i].status;
+                    statuss.push(status_all);
+                }
+                var nodeinfo = [];
+                for (i = 0; i < metadatas.length; i++) {
+                    var name = metadatas[i].name;
+                    var time = metadatas[i].creationTimestamp;
+                    var uid = metadatas[i].uid;
+                    var node = [];
+                    node.push(uid);
+                    node.push(name);
+                    node.push(time);
+                    nodeinfo.push(node);
+                }
+                // var conditions = [];
+                var infos = [];
+                for (i = 0; i < statuss.length; i++) {
+                    // conditions.push(statuss[i].conditions);
+                    infos.push(statuss[i].nodeInfo);
 
                 }
+                var nodestatus = [];
+                // for (i = 0; i < conditions.length; i++) {
+                //     var con = conditions[i];
 
+                //     for (j = 0; j < con.length; j++) {
+                //         var type = con[j].type;
+                //         // console.log(type);
+                //         if (type == "Ready") {
+                //             var status = con[i].status;
+                //             nodestatus.push(status);
+                //         }
+                //     }
+                // }
+                // console.log(nodestatus);
+                var nodeinfos = [];
+                for (i = 0; i < infos.length; i++) {
+                    var machineID = infos[i].machineID;
+                    var architecture = infos[i].architecture;
+                    var osImage = infos[i].osImage;
+                    var containerRuntimeVersion = infos[i].containerRuntimeVersion;
+                    var info = [];
+                    info.push(machineID);
+                    info.push(architecture);
+                    info.push(osImage);
+                    info.push(containerRuntimeVersion);
+                    nodeinfos.push(info);
+                }
+                // console.log(nodeinfos);                    
+                for (i = 0, len = nodeinfo.length; i < len; i++) {
+
+                    $("table tbody").append("<tr class = 'success'>" +
+                        "<td><div id='nodeinfo-uid'> " + nodeinfo[i][0] + "</div></td>" +
+                        "<td><div id='nodename" + i + "'>" + nodeinfo[i][1] + "</div></td>" +
+                        "<td><div id='nodeinfo-time'> " + nodeinfo[i][2] + "</div></td>" +
+                        "<td><div id='nodeinfo-machineid'> " + nodeinfos[i][0] + "</div></td>" +
+                        "<td><div id='nodeinfo-architecture'> " + nodeinfos[i][1] + "</div></td>" +
+                        "<td><div id='nodeinfo-osimage'> " + nodeinfos[i][2] + "</div></td>" +
+                        "<td><div id='nodeinfo-containerruntimeversion'> " + nodeinfos[i][3] + "</div></td>" +
+                        // "<td><div id='nodeinfo-status'> " + nodestatus[i] + "</div></td>" +
+                        "<td><div id='nodeinfo-operation'> " +
+                        '<button class="btn btn-small btn-success" type="button" onclick="getone(this)" value="nodename' + i + '">查看</button>' +
+                        '<button class="btn btn-small btn-info" type="button" onclick="putone(this)" value="nodename' + i + '">修改</button>' +
+                        '<button class="btn btn-small btn-danger" type="button" onclick="deleteone(this)" value="nodename' + i + '">删除</button>' +
+                        "</div></td>" +
+                        "</tr>");
+                }
             });
         }
         function getone(btn) {
             var btnval = btn.getAttribute("value");
             var getnodename = $("#" + btnval).html();//获得nodenames          
-            window.open("./getonenodeinfo.html?nodename="+getnodename);
-
-            //删除table
-            //显示信息
-            // axios({
-            //     method: 'get',
-            //     url: 'http://172.21.81.235:8000/v1/datacenter/id/cluster/id/node/'+getnodename,
-            // }).then(function (response) {
-            //     //    console.log(response);
-            //     var describe = JSON.stringify(response);
-            //     alert(describe);
-            //     $("table").remove();
-            //     $("#mybr").append(
-            //         '<div class="form-group">'+
-            //             '<label>节点名称</label><input type="text" class="form-control" id="mynodename" value="'+nodename+'" required />'+
-            //         '</div>'+
-            //         '<div>'+
-            //             '<h2>nodeinfo</h2>'+
-            //             '<textarea id="node-info" cols="120" rows="20" value=""></textarea>'+
-            //         '</div>'
-            //        );
-            //     $("#node-info").val(describe);
-            // });
-
+            window.open("./getonenodeinfo.html?nodename=" + getnodename);
 
         }
         function putone(btn) {
             var btnval = btn.getAttribute("value");
             var getnodename = $("#" + btnval).html();//获得nodenames 
-            window.open("./putnode.html?nodename="+getnodename);
+            window.open("./putnode.html?nodename=" + getnodename);
         }
         function deleteone(btn) {
             alert("确定要删除它吗？");
@@ -180,7 +122,7 @@
                 window.open('./node.html'))
             // window.open("./deletenode.html?nodename="+getnodename);
         }
-      
+
 
     </script>
 

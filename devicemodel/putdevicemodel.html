@@ -16,31 +16,82 @@
         }
     </style>
     <script type="text/javascript">
+        function myload() {
+            var url = location.search; //获取url中"?"符后的字串 
+            console.log("url" + url);
+            var theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1); //substr()方法返回从参数值开始到结束的字符串；  
+                var strs = str.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split("=")[0]] = (strs[i].split("=")[1]);
+                }
+                console.log(theRequest); //此时的theRequest就是我们需要的参数；
+                $("#devicemodel-name").val(theRequest.devicemodelname);
+                $("#devicemodel-namespace").val(theRequest.devicemodelnamespace);
+
+            }
+        }
         function putdevicemodel() {
             var devicemodelname = $("#devicemodel-name").val();
+            var namespace = $("#devicemodel-namespace").val();
             //  var labelname = $("#label-name").val();
             var labelvalue = $("#label-value").val();
+
             axios({
                 method: 'put',
-                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/devicemodel/update',
+                url: 'http://172.21.81.235:8000/v1/cluster/id/devicemodel',
                 data: {
                     "metadata": {
                         "name": devicemodelname,
-                        "namespace": "default",
+                        "namespace": namespace,
+                        "selfLink": "/apis/devices.kubeedge.io/v1alpha1/namespaces/default/devicemodels/device-model-test",
+                        "uid": "ebf2fae3-4d54-4a66-a091-15b7ec595d9c",
+                        "resourceVersion": "596196",
+                        "generation": 1,
+                        "creationTimestamp": "2019-08-28T01:23:57Z",
                         "Labels": {
-                            "labelname": labelvalue,
+                            "labelname": labelvalue
                         }
+                    },
+                    "spec": {
+                        "properties": [
+                            {
+                                "name": "temperature",
+                                "description": "temperature in degree celsius",
+                                "type": {
+                                    "int": {
+                                        "accessMode": "ReadWrite",
+                                        "maximum": 100,
+                                        "unit": "degree celsius"
+                                    }
+                                }
+                            }
+                        ],
+                        "propertyVisitors": [
+                            {
+                                "propertyName": "temperature",
+                                "modbus": {
+                                    "register": "HoldingRegister",
+                                    "offset": 0,
+                                    "limit": 1,
+                                    "scale": 1,
+                                    "isSwap": true,
+                                    "isRegisterSwap": true
+                                }
+                            }
+                        ]
                     }
                 }
             }).then(
-                alert("设备模型修改成功"),
-                window.location.href='./devicemodel.html');
+                alert("应用修改成功"),
+                // window.location.href='./devicemodel.html');
                 window.open('./devicemodel.html'))
         }
     </script>
 </head>
 
-<body>
+<body onload="myload()">
     <div class="container" id="formcontainer">
 
         <div class="row clearfix">
@@ -54,7 +105,12 @@
                         <label >节点编号</label><input type="number" class="form-control" />
                     </div> -->
                     <div class="form-group">
-                        <label>devicemodel-name</label><input type="text" class="form-control" id="devicemodel-name" value="" required />
+                        <label>devicemodel-name</label><input type="text" class="form-control" id="devicemodel-name"
+                            value="" required />
+                    </div></br>
+                    <div class="form-group">
+                        <label>devicemodel-namespace</label><input type="text" class="form-control"
+                            id="devicemodel-namespace" value="" required />
                     </div></br>
                     <div class="form-group">
                         <label>devicemodel-label</label></br>

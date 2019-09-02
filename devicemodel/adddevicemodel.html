@@ -17,13 +17,15 @@
     </style>
     <script type="text/javascript">
         function adddevicemodel() {
-            var name = $("#devicemodel-name").val();  
+            var name = $("#devicemodel-name").val();
             var namespace = $("#devicemodel-namespace").val();
-            //var propertiesname = $("#devicemodel-propertiesname").val();
-            //var propertiesvaluemax = $("#devicemodel-propertiesvaluemax").val();
+
+            var devicemodelmaxstr = $("#devicemodel-max").val();
+            var devicemodelmax = parseInt(devicemodelmaxstr);
+            // console.log(name+""+namespace+""+description+""+annotation+""+replicas+""+image+""+hostPort+""+containerPort);
             axios({
                 method: 'post',
-                url: 'http://172.21.81.235:8000/vl/datacenter/id/cluster/id/devicemodel/create',
+                url: 'http://172.21.81.235:8000/v1/cluster/id/devicemodel',
                 data: {
                     "apiVersion": "devices.kubeedge.io/v1alpha1",
                     "kind": "DeviceModel",
@@ -31,9 +33,7 @@
                         "creationTimestamp": "2019-08-05T08:03:41Z",
                         "generation": 1,
                         "name": name,
-                        "namespace": namespace,
-                        "selfLink": "/apis/devices.kubeedge.io/v1alpha1/namespaces/default/devicemodels/device-model-test",
-                        "uid": "ccfcabcf-d017-45f2-ac1a-0aea5bd7daf1"
+                        "namespace": namespace
                     },
                     "spec": {
                         "properties": [
@@ -43,7 +43,7 @@
                                 "type": {
                                     "int": {
                                         "accessMode": "ReadWrite",
-                                        "maximum": 100,
+                                        "maximum": devicemodelmax,
                                         "unit": "degree celsius"
                                     }
                                 }
@@ -65,7 +65,7 @@
                     }
                 }
             }).then(
-                alert("设备模型创建成功"),
+                alert("应用创建成功"),
                 // window.location.href='./devicemodel.html');
                 window.open('./devicemodel.html'))
         }
@@ -83,10 +83,15 @@
             <div class="col-md-12 column" style="margin-top: 5%">
                 <form role="form">
                     <div class="form-group">
-                        <label>devicemodel-name</label><input type="text" class="form-control" id="devicemodel-name" value="" required /><br/>
-                        <label>devicemodel-namespace</label><input type="text" class="form-control" id="devicemodel-namespace" value="" required /><br/>
-                        <!-- <label>devicemodel-propertiesname</label><input type="text" class="form-control" id="devicemodel-propertiesname" value="" required /><br/>
-                        <label>devicemodel-propertiesvaluemax</label><input type="text" class="form-control" id="devicemodel-propertiesvaluemax" value="" required /><br/> -->
+                        <label>devicemodel-name</label><input type="text" class="form-control" id="devicemodel-name"
+                            value="devicemodel" required /><br />
+                        <label>devicemodel-namespace</label><input type="text" class="form-control"
+                            id="devicemodel-namespace" value="default" required /><br />
+                        
+                        <label>devicemodel-max</label><input type="number" class="form-control"
+                            id="devicemodel-max" value="100" required /><br />
+
+
                     </div>
 
                     <input style="width: 80px" type="button" class="btn btn-success" onclick="adddevicemodel()"
