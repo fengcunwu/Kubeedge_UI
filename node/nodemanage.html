@@ -20,7 +20,7 @@
         function myFunction() {
             axios({
                 method: 'get',
-                url: 'http://172.21.81.235:8000/v1/datacenter/id/cluster/id/nodes'
+                url: 'http://192.168.226.139:8000/v1/datacenter/id/cluster/id/nodes'
             }).then(function (response) {
                 items = response.data.items;
                 var metadatas = [];
