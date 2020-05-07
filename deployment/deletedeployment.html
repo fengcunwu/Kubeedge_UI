@@ -35,7 +35,7 @@
             var namespace = $("#deployment-namespace").val();
             axios({
                 method: 'delete',
-                url: 'http://172.21.81.235:8000/v1/cluster/id/namespace/default/deployment/'+deploymentname,
+                url: 'http://192.168.226.139:8000/v1/cluster/id/namespace/default/deployment/'+deploymentname,
             }).then(
                 alert("应用删除成功"),
                 // window.location.href='./deployment.html');

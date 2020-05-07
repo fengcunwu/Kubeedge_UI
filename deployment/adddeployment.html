@@ -31,7 +31,7 @@
             // console.log(name+""+namespace+""+description+""+annotation+""+replicas+""+image+""+hostPort+""+containerPort);
             axios({
                 method: 'post',
-                url: 'http://172.21.81.235:8000/v1/cluster/id/deployment',
+                url: 'http://192.168.226.139:8000/v1/cluster/id/deployment',
                 data: {
                     "metadata": {
                         "name": name,

@@ -124,7 +124,7 @@
             var getnamespace = $("#" + btnname).html();
             axios({
                 method: 'delete',
-                url: 'http://172.21.81.235:8000/v1/cluster/id/namespace/'+getnamespace+'/deployment/'+getname,
+                url: 'http://192.168.226.139:8000/v1/cluster/id/namespace/'+getnamespace+'/deployment/'+getname,
             }).then(
                 alert("应用删除成功"),
                 // window.location.href='./deployment.html');
