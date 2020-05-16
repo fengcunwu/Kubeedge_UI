@@ -34,7 +34,7 @@
                 var nodename = $("#node-name").val();
                 axios({
                     method: 'get',
-                    url: 'http://192.168.226.139:8000/v1/cluster/id/namespace/default/deployment/' + nodename,
+                    url: 'http://192.168.226.139:8000/v1/cluster/id/namespace/kube-system/deployment/' + nodename,
                 }).then(function (response) {
                     console.log(response);
                     var jj = JSON.stringify(response);
