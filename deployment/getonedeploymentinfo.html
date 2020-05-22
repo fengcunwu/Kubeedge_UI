@@ -40,7 +40,8 @@
                     var jj = JSON.stringify(response);
                     $("#node-info").val(jj);
                 });
-				window.location.href="http://192.168.226.144:80"
+                if ( nodename === 'nginx' )
+				    window.location.href="http://192.168.226.148:80"
             }
     </script>
 </head>
