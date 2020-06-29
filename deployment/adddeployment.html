@@ -18,7 +18,7 @@
     <script type="text/javascript">
         function adddeployment() {
             var name = $("#deployment-name").val();
-            var namespace = $("#deployment-namespace").val();
+            // var namespace = $("#deployment-namespace").val();
             var description = $("#deployment-description").val();
             var annotation = $("#deployment-annotation").val();
             var replicasstr = $("#deployment-replicas").val();
@@ -28,6 +28,8 @@
             var hostPort = parseInt(hostPortstr);
             var containerPortstr = $("#deployment-containerPort").val();
             var containerPort = parseInt(containerPortstr);
+            var limtiscpu = $("#limtis-cpu").val()
+            var limtismemory = $("#limtis-memory").val()
             // console.log(name+""+namespace+""+description+""+annotation+""+replicas+""+image+""+hostPort+""+containerPort);
             axios({
                 method: 'post',
@@ -35,7 +37,7 @@
                 data: {
                     "metadata": {
                         "name": name,
-                        "namespace": namespace,
+                        "namespace": "kube-system",
                         "labels": {
                             "description": description
                         },
@@ -67,7 +69,17 @@
                                                 "containerPort": containerPort,
                                                 "protocol": "TCP"
                                             }
-                                        ]
+                                        ],
+                                        "resources": {
+                                            "requests": {
+                                                "cpu": "1",
+                                                "memory": "512Mi"
+                                            },
+                                            "limits": {
+                                                "cpu": limtiscpu,
+                                                "memory": limtismemory
+                                            }
+                                        }
                                     }
                                 ]
                             }
@@ -95,8 +107,8 @@
                     <div class="form-group">
                         <label>deployment-name</label><input type="text" class="form-control" id="deployment-name"
                             value="nginx" required /><br />
-                        <label>deployment-namespace</label><input type="text" class="form-control"
-                            id="deployment-namespace" value="default" required /><br />
+                        <!-- <label>deployment-namespace</label><input type="text" class="form-control"
+                            id="deployment-namespace" value="default" required /><br /> -->
                             <label>deployment-description</label><input type="text" class="form-control"
                             id="deployment-description" value="nginx"/><br />
                             <label>deployment.kubernetes.io/revision</label><input type="text" class="form-control"
@@ -109,8 +121,10 @@
                             id="deployment-hostPort" value="80" required /><br />
                             <label>deployment-containerPort</label><input type="number" class="form-control"
                             id="deployment-containerPort" value="80" required /><br />
-
-                            
+                            <label>limits-cpu</label><input type="text" class="form-control"
+                            id="limits-cpu" value="1" required /><br />
+                            <label>limtis-memory</label><input type="text" class="form-control"
+                            id="limtis-memory" value="512Mi" required /><br />
                     </div>
 
                     <input style="width: 80px" type="button" class="btn btn-success" onclick="adddeployment()"

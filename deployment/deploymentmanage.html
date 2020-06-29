@@ -15,10 +15,11 @@
         </style>
     <script>
         //页面加载事件，node - get all
+        var nodeinfo = []
         function myFunction() {
             jQuery.support.cors = true;
             $.ajax({
-                url: "http://192.168.226.139:8000/v1/cluster/id/deployments",
+                url: "http://192.168.226.139:8000/v1/cluster/id/dockerSource",
                 
                 type: "GET",
                 dataType: "json",
@@ -26,66 +27,53 @@
                 cache: false,
                 success: function (result) {
                     var s = eval(result);
-                    var items = s.items;
+                    var ret = s.ret;
                     var metadatas = [];
                    // var specs = [];
                     $("td").remove();
-                    for (j = 0, len = items.length; j < len; j++) {
-                        var meta = items[j].metadata;
-                        var spec = items[j].spec;
-                        metadatas.push(meta);
+                    for (j = 0, len = ret.length; j < len; j++) {
+                        metadatas.push(ret[j]);
                         //specs.push(spec);
                     }
-                    var nodeinfo = [];//uid,name,time,namespace,
+                    console.log(metadatas)
+                    // var nodeinfo = [];//uid,name,time,namespace,
                     var properties = [];//properties
                     for (i = 0, len = metadatas.length; i < len; i++) {
-                        var uid = metadatas[i].uid;
-                        var name = metadatas[i].name;
-                        var time = metadatas[i].creationTimestamp;
-                        var namespace = metadatas[i].namespace;
+                        // var id = metadatas[i].Id.substring(0,12);
+                        var id = metadatas[i].Id
+                        var image = metadatas[i].Image;
+                        // var createTime = ;
+                        var createTime = new Date(parseInt(metadatas[i].Created) * 1000).toLocaleString().replace(/:\d{1,2}$/,' ')
+                        var name = metadatas[i].Names;
+                        var port = metadatas[i].Ports
+                        if (metadatas[i].Ports.length > 0) {
+                            port = metadatas[i].Ports[metadatas[i].Ports.length - 1].PublicPort
+                        } 
+                        var status = metadatas[i].State
                         var node = [];
-                        node.push(uid);
+                        node.push(id);
+                        node.push(image);
+                        node.push(createTime);
                         node.push(name);
-                        node.push(time);
-                        node.push(namespace);
+                        node.push(port);
+                        node.push(status)
                         nodeinfo.push(node);
                     }
-                    // for(i = 0,len = specs.length;i < len;i++){
-                    //      var proper = specs[i].properties;
-                    //     properties.push(proper);
-                    // }
-                    //console.log(specs);
-                    // var propertiesinfo = [];
-                    // var types = [];
-                    // for(i = 0,len = properties.length;i < len;i++){
-                    //     var type = properties[i].type;
-                    //     types.push(type);
-                    // }
-                    // var ints = [];
-                    // for(i = 0,len = types.length;i < len;i++){
-                    //     var intjson = types[i].int;
-                    //     ints.push(intjson);
-                    // }
-                    // for(i = 0,len = ints.length;i < len;i++){
-                    //     var name = ints[i].name;
-                    //     var max = ints[i].maximum;
-                    //     propertiesinfo.push(name);
-                    //     propertiesinfo.push(max);
-                    // }
-                    // console.log(propertiesinfo);
-
+                    console.log(nodeinfo)
                     for (i = 0, len = nodeinfo.length; i < len; i++) {
-
+                        console.log(nodeinfo[i][0])
                         $("table tbody").append("<tr class = 'success'>" +
-                            "<td><div id='nodeinfo-uid'>" + nodeinfo[i][0] + "</div></td>" +
-                            "<td><div id='name" + i + "'>" + nodeinfo[i][1] + "</div></td>" +
-                            "<td><div id='nodeinfo-time'>" + nodeinfo[i][2] + "</div></td>" +
-                            "<td><div id='namespace"+i+"'>" + nodeinfo[i][3] + "</div></td>" +
-                            "<td><div id='nodeinfo-status'>" + 'running' + "</div></td>"+
+                            "<td><div id='index'>" + nodeinfo[i][0].substring(0, 13) + "</div></td>" +
+                            "<td><div id='image" + i + "'>" + nodeinfo[i][1] + "</div></td>" +
+                            "<td><div id='createTime'>" + nodeinfo[i][2] + "</div></td>" +
+                            "<td><div id='name"+i+"'>" + nodeinfo[i][3] + "</div></td>" +
+                            "<td><div id='port'>" + nodeinfo[i][4] + "</div></td>"+
+                            "<td><div id='status'>" + nodeinfo[i][5] + "</div></td>"+
                             "<td><div id='nodeinfo-operation'> " +
-                            '<button class="btn btn-small btn-success" type="button" onclick="getone(this)" value="name' + i + '">查看</button>' +
-                            '<button class="btn btn-small btn-info" type="button" onclick="putone(this)" value="name' + i + '"  name="namespace'+i+'">修改</button>' +
-                            '<button class="btn btn-small btn-danger" type="button" onclick="deleteone(this)" value="name' + i + '" name="namespace'+i+'">删除</button>' +
+                            '<button class="btn btn-small btn-success" type="button" onclick="getone(this)" value="name'+i+'">查看</button>' +
+                            '<button class="btn btn-small btn-info" type="button" onclick="stopone(this)" value="name' + i + '"  name="namespace'+i+'">Stop</button>' +
+                            '<button class="btn btn-small btn-info" type="button" onclick="restartone(this)" value="name' + i + '"  name="namespace'+i+'">Restart</button>' +
+                            '<button class="btn btn-small btn-danger" type="button" onclick="deleteone(this)" value="name'+i+'" name="namespace'+i+'">删除</button>' +
                             "</div></td>" +
                             "</tr>");
                         // $("#hiddeninfos").append(
@@ -103,8 +91,47 @@
 
         function getone(btn) {
             var btnval = btn.getAttribute("value");
-            var getname = $("#" + btnval).html();//获得name
-            window.open("./getonedeploymentinfo.html?nodename="+getname);
+            console.log(nodeinfo)
+            // var btnname = btn.getAttribute("name");
+            var num = btnval.substring(btnval.length - 1)
+            console.log(num)
+            if(nodeinfo[num][5] == "running") {
+                window.open("./getonedeploymentinfo.html?name="+nodeinfo[num][0]);
+            } else {
+                alert("该容器未处于运行状态，无法获取资源信息")
+            }
+            // window.open("http://192.168.226.148:8081/containers/docker/"+id);
+        }
+        function restartone(btn) {
+            var btnval = btn.getAttribute("value");
+            console.log(nodeinfo)
+            console.log(btnval.substring(btnval.length - 1))
+            var num = btnval.substring(btnval.length - 1)
+            axios({
+                method: "post",
+                url: "http://192.168.226.148:8000/v1/cluster/id/containers/restart/name/" + nodeinfo[num][0]
+            }).then(function (resp) {
+                alert("Restart 成功")
+                console.log(resp)
+                window.open("./deployment.html")
+            })
+        }
+        function stopone(btn) {
+            var btnval = btn.getAttribute("value");
+            var num = btnval.substring(btnval.length - 1)
+            var containerStatus = nodeinfo[num][5]
+            if(containerStatus != "running") {
+                alert("该容器的状态不是running，不能停止")
+            } else {
+                axios({
+                    method: "post",
+                    url: "http://192.168.226.148:8000/v1/cluster/id/containers/stop/containerId/" + nodeinfo[num][0]
+                }).then(function (resp) {
+                    alert("Stop 成功")
+                    console.log(resp)
+                    window.open("./deployment.html")
+                })
+            }
         }
         function putone(btn) {
             var btnval = btn.getAttribute("value");
@@ -116,22 +143,22 @@
             window.open("./putdeployment.html?deploymentname="+getname+"&deploymentnamespace="+getnamespace);
         }
         function deleteone(btn) {
-            alert("确定要删除它？");
-            var btnval = btn.getAttribute("value");
-            var btnname = btn.getAttribute("name");
-            
-            var getname = $("#" + btnval).html();//获得name
-            var getnamespace = $("#" + btnname).html();
-            axios({
-                method: 'delete',
-                url: 'http://192.168.226.139:8000/v1/cluster/id/namespace/'+getnamespace+'/deployment/'+getname,
-            }).then(
-                alert("应用删除成功"),
-                // window.location.href='./deployment.html');
-                window.open('./deployment.html'))
+            var btnval = btn.getAttribute("value"); 
+            var containerId = nodeinfo[btnval.substring(btnval.length - 1)][0]
+            var containerStatus = nodeinfo[btnval.substring(btnval.length - 1)][5]
+            if(containerStatus == "running") {
+                alert("您不能删除运行中的容器")
+            } else {
+                alert("您确定要删除该容器吗？")
+                axios({
+                    method: "delete",
+                    url: "http://192.168.226.148:8000/v1/cluster/id/containers/delete/containerId/" + nodeinfo[btnval.substring(btnval.length - 1)][0],
+                }).then(function (resp) {
+                    console.log(resp)
+                    window.open("./deployment.html")
+                })
+            }
         }
-            // window.open("./deletedeployment.html?nodename="+getname);
-
     </script>
 
 </head>
@@ -141,34 +168,37 @@
     <div class="col-md-12 column">
             <div id="formcontainer">
                     <p style="text-align: left">
-                        <h1 style="margin-left: 70%">应用信息</h1>
+                        <h1 style="margin-left: 70%">容器信息</h1>
                     </p>
                 </div> </br></br>
         <!--按钮-->
-        <button type="button" class="btn btn-info"><p style='text-align: center'><a href="./adddeployment.html" target="_blank">创建应用信息</a></p></button>                                 
+        <!-- <button type="button" class="btn btn-info"><p style='text-align: center'><a href="./adddeployment.html" target="_blank">创建容器</a></p></button>                                  -->
         </br></br>
         <!--表格-->
         <table class="table table-hover table-bordered">
             <thead>
                 <tr>
                     <th>
-                        application uid
+                        ContainerID
                     </th>
                     <th>
-                        application name
+                        Image
                     </th>
                     <th>
-                        creation time
+                        CreationTime
                     </th>
                     <th>
-                        namespace
+                        Name
                     </th>
                     <th>
-                        status
+                        Port
                     </th>
                     <th>
-                            operation
-                        </th>
+                        Status
+                    </th>
+                    <th>
+                        Operation
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -176,9 +206,6 @@
 
             </tbody>
         </table>
-        <!-- <div id=hiddeninfos>
-
-        </div> -->
     </div>
     
 </body>

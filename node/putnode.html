@@ -16,6 +16,14 @@
         }
     </style>
     <script type="text/javascript">
+        function queryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if(r !=null) {
+               return unescape(r[2])
+            }  
+            return null
+        }
         function myload() {
             var url = location.search; //获取url中"?"符后的字串 
             var theRequest = new Object();
@@ -30,12 +38,12 @@
             }
         }
         function putnode() {
-            var nodename = $("#node-name").val();
+            var nodename = queryString(nodename);
             //  var labelname = $("#label-name").val();
             var labelvalue = $("#label-value").val();
             axios({
                 method: 'put',
-                url: 'http://172.21.81.235:8000/v1/datacenter/id/cluster/id/node',
+                url: 'http://192.168.226.139:8000/v1/datacenter/id/cluster/id/node',
                 data: {
                     "metadata": {
                         "name": nodename,

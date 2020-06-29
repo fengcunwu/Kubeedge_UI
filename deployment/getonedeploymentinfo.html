@@ -16,6 +16,15 @@
         }
     </style>
     <script>
+        function queryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if(r !=null) {
+               return unescape(r[2])
+            }  
+            return null
+        }
+        var containersInfo
         function myload() {
             var url = location.search; //获取url中"?"符后的字串 
           
@@ -28,46 +37,212 @@
                 }
                 console.log(theRequest); //此时的theRequest就是我们需要的参数；
                 $("#node-name").val(theRequest.nodename);
+                getnodeinfo()
             }
         }
-            function getnodeinfo() {
-                var nodename = $("#node-name").val();
-                axios({
-                    method: 'get',
-                    url: 'http://192.168.226.139:8000/v1/cluster/id/namespace/kube-system/deployment/' + nodename,
-                }).then(function (response) {
-                    console.log(response);
-                    var jj = JSON.stringify(response);
-                    $("#node-info").val(jj);
-                });
-                if ( nodename === 'nginx' )
-				    window.location.href="http://192.168.226.148:80"
-            }
+        function getnodeinfo() {
+            var name = queryString('name')
+            console.log(name)
+            axios({
+                method: 'get',
+                url: 'http://192.168.226.148:8000/v1/cluster/id/container/source/name/' + name
+            }).then(function (response) {
+                // console.log(response);
+                // var jj = JSON.stringify(response);
+                // $("#node-info").val(jj);
+                var data = response.data
+                containersInfo = response.data
+                console.log(data)
+                $("table tbody").append("<tr class = 'success'>" +
+                    "<td><div id='CPUPercent'>" + data.CPUPercent.toFixed(3) + "</div></td>" +
+                    "<td><div id='OnlineCPUs" + "'>" + data.OnlineCPUs + "</div></td>" +
+                    "<td><div id='MemoryLimit'>" + data.MemoryLimit + "</div></td>" +
+                    "<td><div id='MemoryUsage" +"'>" + data.MemoryUsage + "</div></td>" +
+                    // "<td><div id='namespace'>" + 'kube-system' + "</div></td>"+
+                    "<td><div id='NetworksRxBytes'>" + data.NetworksRxBytes + "</div></td>"+
+                    "<td><div id='NetworksTxBytes'>" + data.NetworksTxBytes + "</div></td>"  +
+                    "<td><div id='nodeinfo-operation'> " +
+                        '<button class="btn btn-small btn-success" type="button" onclick="getone()">刷新</button>' +
+                    "</div></td>" +
+                    "/tr>"
+                );
+            });
+        }
+        function getone() {
+            var id = queryString('name')
+            window.open("./getonedeploymentinfo.html?name="+id);
+        }
     </script>
+    <style>
+         #index-iframe-top {
+            width: 100%;
+            height: 50px;
+            position: absolute;
+            right: 2px;
+        }
+
+        #index-iframe-left {
+            width: 100%;
+            height: 100%;
+            left: 1px;
+        }
+
+        #index-iframe-left-board{
+            width: 500px;
+            height: 400px;
+            left: 1px;
+        }
+
+        #index-iframe-body {
+            width: 100%;
+            height: 100%;
+            right: 1px;
+        }
+
+        #index-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        #index-container-row {
+            width: 100%;
+            height: 100%;
+            margin-top: 50px;
+        }
+
+        #index-container-row-2 {
+            width: 15%;
+            height: 100%;
+        }
+
+        #index-container-row-10 {
+            width: 40%;
+            height: 100%;
+        }
+    </style>
 </head>
 
 <body onload="myload()">
-    <div class="container" id="formcontainer">
-
-        <div class="row clearfix">
-            <p style="text-align: center">
-                <h2 style="margin-left: 10%">应用信息查询</h2>
-            </p>
-            <div class="col-md-12 column" style="margin-top: 5%">
-                <form role="form">
-                    <div class="form-group">
-                        <label>应用名称</label><input type="text" class="form-control" id="node-name" value="" required />
-                    </div>
-                    <input style="width: 80px" type="button" class="btn btn-success" onclick="getnodeinfo()"
-                        value="Submit"></button>
-                </form>
+    <script type="text/javascript" src="../js\echarts\echarts.min.js"></script>
+    <div class="container" id="index-container">
+        <iframe id="index-iframe-top" src="../top.html"></iframe>
+        <div class="row clearfix" id="index-container-row">
+            <div class="col-md-2 column" id="index-container-row-2">
+                <iframe id="index-iframe-left" src="../left.html"></iframe>
             </div>
-            <div>
-                <h2>
-                    application info
-                </h2>
-                <textarea id="node-info" cols="120" rows="20" value=""></textarea>
-
+            <div class="col-md-10 column" id="index-container-row-10">
+                <div class="container" id="formcontainer">
+                    <div class="row clearfix">
+                        <p style="text-align: center">
+                            <!-- <h2 style="margin-left: 10%">应用信息查询</h2> -->
+                        </p>
+                        <div class="col-md-12 column" style="margin-top: 5%">
+                            <form role="form">
+                                <!-- <div class="form-group">
+                                    <label>容器名称</label><input type="text" class="form-control" id="node-name" value="" required />
+                                    <label>容器命名空间</label><input type="text" class="form-control" id="node-namespace" value="" required />
+                                </div> -->
+                                <!-- <input style="width: 80px" type="button" class="btn btn-success" onclick="getnodeinfo()"
+                                    value="刷新"></button> -->
+                            </form>
+                        </div>
+                        <div>
+                            <h2>
+                                容器资源使用情况
+                            </h2>
+                            <br/>
+                            <!-- <textarea id="node-info" cols="120" rows="20" value=""></textarea> -->
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            CPUPercent
+                                        </th>
+                                        <th>
+                                            OnlineCPUs
+                                        </th>
+                                        <th>
+                                            MemoryLimit
+                                        </th>
+                                        <th>
+                                            MemoryUsage
+                                        </th>
+                                        <th>
+                                            NetworksRxBytes
+                                        </th>
+                                        <th>
+                                            NetworksTxBytes
+                                        </th>
+                                        <th>
+                                            Operation
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div style="height:400px;width: 1100px;">
+                    <a-row :span="10">
+                        <a-col>
+                            <div id="main" style="width: 500px;height:300px; float:left; display:inline; left: 10px"></div>
+                            <div id="memory" style="width: 500px;height:300px;float:left; display:inline"></div>
+                        </a-col>
+                    </a-row>
+                    <script type="text/javascript">
+                        var myChart = echarts.init(document.getElementById('main'));
+                        var myChart_memory = echarts.init(document.getElementById('memory'));
+                        var option = {
+                            tooltip: {
+                                formatter: '{a} <br/>{b} : {c}%'
+                            },
+                            toolbox: {
+                                feature: {
+                                    restore: {},
+                                    saveAsImage: {}
+                                }
+                            },
+                            series: [
+                                {
+                                    name: '业务指标',
+                                    type: 'gauge',
+                                    detail: {formatter: '{value}%'},
+                                    data: [{value: 50, name: 'cpu使用率'}]
+                                }
+                            ]
+                        };
+                        var optionMemory = {
+                            tooltip: {
+                                formatter: '{a} <br/>{b} : {c}%'
+                            },
+                            toolbox: {
+                                feature: {
+                                    restore: {},
+                                    saveAsImage: {}
+                                }
+                            },
+                            series: [
+                                {
+                                    name: '业务指标',
+                                    type: 'gauge',
+                                    detail: {formatter: '{value}%'},
+                                    data: [{value: 50, name: '内存使用率'}]
+                                }
+                            ]
+                        };
+                        setInterval(function () {
+                            // option.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
+                            option.series[0].data[0].value = containersInfo.CPUPercent.toFixed(2);
+                            optionMemory.series[0].data[0].value = (containersInfo.MemoryUsage / containersInfo.MemoryLimit * 100).toFixed(2)
+                            myChart.setOption(option, true);
+                            myChart_memory.setOption(optionMemory, true);
+                        },2000);
+                    </script>
+                </div>
             </div>
         </div>
     </div>

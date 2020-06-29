@@ -11,8 +11,47 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <style>
         #formcontainer {
-            width: 60%;
-            left: 15%;
+            width: 100%;
+            height: 100%;
+        }
+        #index-iframe-top {
+            width: 100%;
+            height: 50px;
+            position: absolute;
+            right: 2px;
+        }
+
+        #index-iframe-left {
+            width: 100%;
+            height: 100%;
+            left: 1px;
+        }
+
+        #index-iframe-body {
+            width: 100%;
+            height: 100%;
+            right: 1px;
+        }
+
+        #index-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        #index-container-row {
+            width: 100%;
+            height: 100%;
+            margin-top: 50px;
+        }
+
+        #index-container-row-2 {
+            width: 15%;
+            height: 100%;
+        }
+
+        #index-container-row-10 {
+            width: 85%;
+            height: 100%;
         }
     </style>
     <script>
@@ -29,44 +68,159 @@
                 console.log(theRequest); //此时的theRequest就是我们需要的参数；
                 $("#node-name").val(theRequest.nodename);
             }
+            getnodeinfo()
         }
             function getnodeinfo() {
-                var nodename = $("#node-name").val();
+                var nodename = queryString("nodename")
                 axios({
                     method: 'get',
                     url: 'http://192.168.226.139:8000/v1/datacenter/id/cluster/id/node/' + nodename,
                 }).then(function (response) {
-                    console.log(response);
-                    var jj = JSON.stringify(response);
-                    $("#node-info").val(jj);
+                    var data = response.data
+                    console.log(data)
+                    var tmp = JSON.stringify(data.metadata.labels).substring(1)
+                    $("table tbody").append("<tr class = 'success'>" +
+                        "<td><div id='Labels'>" + tmp.substring(0, tmp.length - 1)+ "</div></td>" +
+                        "<td><div id='IP'>" + data.status.addresses[0].address + "</div></td>"  +
+                        "<td><div id='selfLink" + "'>" + data.metadata.selfLink + "</div></td>" +
+                        "/tr>"
+                    );
+                    $("#systemTable tbody").empty()
+                    $("#systemTable tbody").append("<tr class = 'success'>" +
+                        "<td><div id='CPU'>" + data.status.capacity.cpu + "</div></td>" +
+                        "<td><div id='Memory'>" + data.status.capacity.memory + "</div></td>"  +
+                        "<td><div id='Pods" + "'>" + data.status.capacity.pods + "</div></td>" +
+                        "/tr>"
+                    );
+                    $("#systemStatus tbody").empty()
+                    $("#systemStatus tbody").append("<tr class = 'success'>" +
+                        "<td><div id='状态'>" + data.status.conditions[0].type + "</div></td>" +
+                        "<td><div id='类型'>" + data.status.conditions[0].status + "</div></td>"  +
+                        "<td><div id='启动时间" + "'>" + data.status.conditions[0].lastHeartbeatTime + "</div></td>" +
+                        "/tr>"
+                    );
                 });
 
             }
+        function queryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if(r !=null) {
+               return unescape(r[2])
+            }  
+            return null
+        }
     </script>
 </head>
 
 <body onload="myload()">
     <div class="container" id="formcontainer">
-
-        <div class="row clearfix">
-            <p style="text-align: center">
-                <h2 style="margin-left: 10%">边缘节点信息查询</h2>
-            </p>
-            <div class="col-md-12 column" style="margin-top: 5%">
-                <form role="form">
-                    <div class="form-group">
-                        <label>节点名称</label><input type="text" class="form-control" id="node-name" value="" required />
+        <div class="container" id="index-container">
+            <iframe id="index-iframe-top" src="../top.html"></iframe>
+            <div class="row clearfix" id="index-container-row">
+                <div class="col-md-2 column" id="index-container-row-2">
+                    <iframe id="index-iframe-left" src="../left.html"></iframe>
+                </div>
+                <div class="col-md-10 column" id="index-container-row-10">
+                    <div class="row clearfix">
+                        <p style="text-align: center">
+                            <!-- <h2 style="margin-left: 10%">边缘节点信息查询</h2> -->
+                        </p>
+                        <div class="col-md-12 column" style="margin-top: 5%">
+                            <form role="form">
+                                <!-- <div class="form-group">
+                                    <label>节点名称</label><input type="text" class="form-control" id="node-name" value="" required />
+                                </div>
+                                <input style="width: 80px" type="button" class="btn btn-success" onclick="getnodeinfo()"
+                                    value="Submit"></button> -->
+                                
+                            </form>
+                        </div>
+                        <!-- <div>
+                            <h2>
+                                nodeinfo
+                            </h2>
+                            <textarea id="node-info" cols="120" rows="20" value=""></textarea>
+            
+                        </div> -->
+                        <div>
+                            <br/>
+                            <!-- <textarea id="node-info" cols="120" rows="20" value=""></textarea> -->
+                            <table class="table table-hover table-bordered">
+                                <caption>节点标签</caption>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Labels
+                                        </th>
+                                        <th>
+                                            IP
+                                        </th>
+                                        <th>
+                                            selfLink
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <table class="table table-hover table-bordered" id="systemTable">
+                                <caption>节点系统配置</caption>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            CPU 
+                                        </th>
+                                        <th>
+                                            Memory
+                                        </th>
+                                        <th>
+                                            Pods
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <table class="table table-hover table-bordered" id="systemStatus">
+                                <caption>节点状态</caption>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            状态
+                                        </th>
+                                        <th>
+                                            类型
+                                        </th>
+                                        <th>
+                                            启动时间
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <!-- <table class="table table-hover table-bordered" id="systemInfo">
+                                <caption>节点详细信息</caption>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            状态
+                                        </th>
+                                        <th>
+                                            类型
+                                        </th>
+                                        <th>
+                                            启动时间
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table> -->
+                        </div>
                     </div>
-                    <input style="width: 80px" type="button" class="btn btn-success" onclick="getnodeinfo()"
-                        value="Submit"></button>
-                </form>
-            </div>
-            <div>
-                <h2>
-                    nodeinfo
-                </h2>
-                <textarea id="node-info" cols="120" rows="20" value=""></textarea>
-
+                </div>
             </div>
         </div>
     </div>
